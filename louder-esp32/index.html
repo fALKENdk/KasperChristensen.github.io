@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Louder ESP32 rev-k0</title>
+        <style>
+            :root {
+                --bg: #101019;
+                --text: #f4f4fa;
+                --muted: #d9d9fc;
+                --panel: #4d4d95;
+                --accent-a: cyan;
+                --accent-b: magenta;
+                --radius: 16px;
+                --gap: 1.5rem;
+                --dur-fast: 250ms;
+                --ratio-wide: 1.51811;
+                --ratio-tall: 0.84756;
+            }
+
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+            }
+
+            body {
+                background: var(--bg);
+                color: var(--text);
+                display: grid;
+                font-family: system-ui, sans-serif;
+                line-height: 1.5;
+                margin: 0;
+                min-block-size: 100dvh;
+                padding: clamp(1rem, 2.5vw, 2.5rem);
+                place-items: center;
+            }
+
+            .page {
+                inline-size: min(100%, 1400px);
+            }
+
+            header {
+                margin-block-end: 3rem;
+                text-align: center;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+                font-weight: 600;
+                line-height: 1.6;
+                margin: 0;
+            }
+
+            .subtitle {
+                color: var(--muted);
+                font-size: 1.6rem;
+                line-height: 1;
+                margin: 0;
+            }
+
+            .groups {
+                display: flex;
+                flex-wrap: wrap;
+                gap: var(--gap);
+            }
+
+            .group {
+                background:
+                    linear-gradient(var(--panel), var(--panel)) padding-box,
+                    radial-gradient(
+                            circle at 20% 0%,
+                            color-mix(in srgb, var(--group-accent) 58%, transparent) 0%,
+                            color-mix(in srgb, var(--group-accent) 34%, transparent) 40%,
+                            color-mix(in srgb, var(--group-accent) 12%, var(--panel)) 70%,
+                            var(--panel) 100%
+                        )
+                        border-box;
+                border: 3px solid transparent;
+                border-radius: var(--radius);
+                display: flex;
+                flex: 1 1 480px;
+                flex-direction: column;
+                max-inline-size: 100%;
+                min-inline-size: 0;
+                overflow: clip;
+                position: relative;
+            }
+
+            .group > * {
+                position: relative;
+                z-index: 1;
+            }
+
+            .group-a {
+                --group-accent: var(--accent-a);
+            }
+            .group-b {
+                --group-accent: var(--accent-b);
+            }
+
+            .group::before {
+                background: radial-gradient(
+                    circle at 20% 0%,
+                    color-mix(in srgb, var(--group-accent) 30%, transparent) 0%,
+                    transparent 64%
+                );
+                content: '';
+                inset: 0;
+                pointer-events: none;
+                position: absolute;
+                z-index: 0;
+            }
+
+            .group-title {
+                align-items: center;
+                color: var(--muted);
+                display: flex;
+                font-size: 1.3rem;
+                font-weight: 500;
+                gap: 0.5rem;
+                justify-content: center;
+                margin: 0;
+                padding: 1rem;
+                text-align: center;
+            }
+
+            .group-badge {
+                background: color-mix(in srgb, var(--group-accent) 28%, transparent);
+                border: 1px solid color-mix(in srgb, var(--group-accent) 70%, transparent);
+                border-radius: 999px;
+                color: white;
+                font-size: 1rem;
+                font-weight: 700;
+                line-height: 1;
+                padding: 0.25rem 1rem;
+            }
+
+            .group-images {
+                align-items: flex-start;
+                background: var(--bg);
+                display: flex;
+                gap: var(--gap);
+                padding: var(--gap);
+            }
+
+            .group-images > a {
+                border-radius: var(--radius);
+                display: block;
+                flex: 1 1 0;
+                min-inline-size: 0;
+                outline: none;
+                overflow: hidden;
+                position: relative;
+            }
+
+            .group-images > a:focus-visible {
+                outline: 2px solid color-mix(in srgb, var(--group-accent) 80%, white);
+                outline-offset: 2px;
+            }
+
+            .group-images > a:first-child {
+                flex-grow: var(--ratio-wide);
+            }
+            .group-images > a:last-child {
+                flex-grow: var(--ratio-tall);
+            }
+
+            .group-images img {
+                block-size: auto;
+                display: block;
+                inline-size: 100%;
+                transition: opacity var(--dur-fast) ease;
+            }
+
+            .hallucination-effect {
+                background-position: center;
+                background-size: cover;
+                border-radius: inherit;
+                inset: 0;
+                opacity: 0;
+                pointer-events: none;
+                position: absolute;
+                transition: opacity var(--dur-fast) ease;
+            }
+
+            .group-images > a:is(:hover, :focus-visible) .hallucination-effect {
+                opacity: 1;
+            }
+
+            @supports (mix-blend-mode: multiply) {
+                .hallucination-effect {
+                    background-blend-mode: screen;
+                    background-color: magenta;
+                }
+
+                .hallucination-effect::before,
+                .hallucination-effect::after {
+                    background: inherit;
+                    border-radius: inherit;
+                    content: '';
+                    inset: 0;
+                    mix-blend-mode: multiply;
+                    position: absolute;
+                    transform: scale(1.05);
+                }
+
+                .hallucination-effect::before {
+                    background-blend-mode: screen;
+                    background-color: yellow;
+                    transform-origin: top left;
+                }
+
+                .hallucination-effect::after {
+                    background-blend-mode: screen;
+                    background-color: cyan;
+                    transform-origin: bottom right;
+                }
+            }
+
+            @media (max-width: 1024px) {
+                .group {
+                    flex-basis: 100%;
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                .group-images img,
+                .hallucination-effect {
+                    transition: none;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="page">
+            <header>
+                <h1>Louder ESP32 rev-k0</h1>
+                <p class="subtitle">PBTL</p>
+            </header>
+
+            <div class="groups">
+                <section class="group group-a" aria-labelledby="group-a-title">
+                    <h2 id="group-a-title" class="group-title">Variant <span class="group-badge">A</span></h2>
+                    <div class="group-images">
+                        <a href="louder-esp32-k0-ver-a.png" target="_blank" rel="noopener">
+                            <img src="louder-esp32-k0-ver-a.png" alt="Louder ESP32 K0 Variant A" loading="lazy" />
+                            <span
+                                class="hallucination-effect"
+                                style="background-image: url(louder-esp32-k0-ver-a.png)"></span>
+                        </a>
+                        <a href="louder-esp32-k0-ver-a-pbtl.png" target="_blank" rel="noopener">
+                            <img
+                                src="louder-esp32-k0-ver-a-pbtl.png"
+                                alt="Louder ESP32 K0 PBTL Variant A"
+                                loading="lazy" />
+                            <span
+                                class="hallucination-effect"
+                                style="background-image: url(louder-esp32-k0-ver-a-pbtl.png)"></span>
+                        </a>
+                    </div>
+                </section>
+
+                <section class="group group-b" aria-labelledby="group-b-title">
+                    <h2 id="group-b-title" class="group-title">Variant <span class="group-badge">B</span></h2>
+                    <div class="group-images">
+                        <a href="louder-esp32-k0-ver-b.png" target="_blank" rel="noopener">
+                            <img src="louder-esp32-k0-ver-b.png" alt="Louder ESP32 K0 Variant B" loading="lazy" />
+                            <span
+                                class="hallucination-effect"
+                                style="background-image: url(louder-esp32-k0-ver-b.png)"></span>
+                        </a>
+                        <a href="louder-esp32-k0-ver-b-pbtl.png" target="_blank" rel="noopener">
+                            <img
+                                src="louder-esp32-k0-ver-b-pbtl.png"
+                                alt="Louder ESP32 K0 PBTL Variant B"
+                                loading="lazy" />
+                            <span
+                                class="hallucination-effect"
+                                style="background-image: url(louder-esp32-k0-ver-b-pbtl.png)"></span>
+                        </a>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </body>
+</html>
